@@ -3,20 +3,21 @@ import './App.css';
 import * as d3 from "d3"
 import { csv } from 'd3';
 
-const csvURL = `https://gist.githubusercontent.com/amit-vis/c9b7b5a78cab30620e59d00ade0e0ae4/raw/6e48fd409101417e77642041beef00b3544933d4/UN_PPP2022_Output_PopTot.csv`
+const csvURL = `https://gist.githubusercontent.com/amit-vis/e77b668ae2278d9c396a7f5547650edd/raw/eec2bb31b892aa48c70186b34b5221e8e90bef03/iris.csv`
 
 export const useData = ()=>{
     const [data, setData] = useState(null)
+    console.log(data)
   
     useEffect(()=>{
       const row = d => {
-        d.Population = +d['2100']*1000
+        d.sepal_length = +d.sepal_length;
+        d.sepal_width = +d.sepal_width;
+        d.petal_length = +d.petal_length;
+        d.petal_width = +d.petal_width;
         return d
       }
-      csv(csvURL, row).then(data=>{
-        console.log('fetching data!')
-        setData(data.slice(0,10))
-      })
+      csv(csvURL, row).then(setData)
     },[])
     return data
   }

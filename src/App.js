@@ -2,75 +2,89 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import * as d3 from "d3"
-import { csv,arc,pie } from 'd3';
-import { message } from './message';
-import { BarChart } from './barchart';
-
-const csvURL = `https://gist.githubusercontent.com/amit-vis/d6ac94c376bfd6a3d73693ba569d45ba/raw/cssnamedcolor.csv`
+import { csv,scaleLinear,max,format, extent, arc } from 'd3';
+import { useData } from './useData';
+import { AxisBottom } from './AxisBottom';
+import { AxisLeft } from './AxisLeft';
+import { Marks } from './Marks';
 
 const width = 960;
 const height = 500;
-const centerX = width/2
-const centerY = height/2
+const margin = {top: 20, right: 30, bottom: 70, left: 90}
 
 const pieArc = arc()
   .innerRadius(0)
   .outerRadius(width)
-
 function App() {
-
-  const [data, setData] = useState(null)
-
-  useEffect(()=>{
-    csv(csvURL).then(data=>{
-      console.log('fetching data!')
-      setData(data)
-    })
-  },[])
+  const data = useData();
 
   if(!data){
     return <pre>Loading....</pre>
   }
-  
+  console.log(data[0])
 
-  // const circleRadius = 30;
-  // const initialMousePosition = {x:width/2, y:height/2 }
-  // const [mousePosition, setMousePosition] = useState(initialMousePosition);
+  const innerHeight = height-margin.top - margin.bottom;
+  const innerWidth = width-margin.left - margin.right;
 
-  // const handleMouseMove = (event)=>{
-  //   const {clientX, clientY} = event;
-  //   setMousePosition({x: clientX, y:clientY})
-  // }
-  console.log(data)
-  const colorPie = pie().value(1)
+  const xValue = d => d.sepal_length;
+  const xAxisLabel = "Sepal Length";
+  const xAxisLabelOffset = 50;
+
+  const yValue = d => d.sepal_width;
+  const yAxisLabel = "Sepal Width";
+  const yAxisLabelOffset = 40
+
+  const siFormat = format('.2s')
+  const xAxisTickFormat = tickValue=>siFormat(tickValue).replace("G", "B")
+
+  const xScale = scaleLinear()
+    .domain(extent(data, xValue))
+    .range([0,innerWidth])
+    .nice()
+
+  const yScale = scaleLinear()
+    .domain(extent(data, yValue))
+    .range([0,innerHeight])
+
+    console.log(xScale.ticks())
   return (
     <>
-    {/* <svg width={width} height={height} onMouseMove={handleMouseMove}>
-//       <circle 
-//       r={circleRadius}
-//       cx={mousePosition.x}
-//       cy={mousePosition.y}
-//       >
+        <svg width={width} height={height}>
+          <g transform={`translate(${margin.left}, ${margin.top})`}>
 
-//       </circle>
-//     </svg> */}
-    {/* <svg width={width} height={height}>
-//       <g transform={`translate(${centerX},${centerY})`}>
-//     {colorPie(data).map((d, i)=>(<path
-//     style={{fill: d.data['\tRGB hex value']}} 
-//      {/* <line y2={innerHeight} stroke='black'/> */}
-             {/* <text style={{textAnchor: 'middle'}} dy=".71em" y={innerHeight + 3}>{tickValue}</text> */}
- {/*</>d={pieArc({startAngle: i/data.length*2*Math.PI*/}
- {/*  endAngle: (i+1)/data.length*2*Math.PI})}
-//       d={pieArc(d)}
-//       >
-        
-//       </path>))}}
-      
-//     </g>
-//     </svg> */}
-    <BarChart/>
-     </>
+            <AxisBottom 
+            xScale={xScale} 
+            innerHeight={innerHeight}
+            tickFormat={xAxisTickFormat}
+            tickOffSet={5}
+             />
+            <AxisLeft 
+            yScale={yScale}
+            innerWidth={innerWidth}
+            tickOffSet={5}
+             />
+
+            <text className='axis-label'
+            textAnchor='middle'
+            transform={`translate(${-yAxisLabelOffset},${innerHeight/2}) rotate(-90)`}
+            >{yAxisLabel}</text>
+
+            <text className='axis-label' 
+            x={innerWidth/2} 
+            y={innerHeight+xAxisLabelOffset} 
+            textAnchor='middle'>{xAxisLabel}</text>
+            <Marks 
+            data={data} 
+            xScale={xScale} 
+            yScale={yScale}
+            xValue={xValue}
+            yValue={yValue}
+            toolTipFormat={xAxisTickFormat}
+            circleRadius={7}
+            />
+          </g>
+        </svg>
+        </>
   );
 }
 

@@ -1,13 +1,13 @@
 import './AxisBottom.css';
 
-export const AxisBottom = ({xScale, innerHeight, tickFormat}) =>
+export const AxisBottom = ({xScale, innerHeight, tickFormat, tickOffSet=3}) =>
 xScale.ticks().map(tickValue=>(
   <g className="tick" key={tickValue} transform={`translate(${xScale(tickValue)},0)`}>
     <line y2={innerHeight}/>
     <text 
     style={{textAnchor: "middle"}}
     dy=".71em"
-    y={innerHeight+3}
+    y={innerHeight+tickOffSet}
     >{tickFormat(tickValue)}</text>
   </g>
 ))
