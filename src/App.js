@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import * as d3 from "d3"
-import { csv,scaleLinear,max,format, extent, arc } from 'd3';
+import { csv,scaleLinear,max,timeFormat, extent, arc, scaleTime } from 'd3';
 import { useData } from './useData';
 import { AxisBottom } from './AxisBottom';
 import { AxisLeft } from './AxisLeft';
@@ -26,25 +26,25 @@ function App() {
   const innerHeight = height-margin.top - margin.bottom;
   const innerWidth = width-margin.left - margin.right;
 
-  const xValue = d => d.sepal_length;
-  const xAxisLabel = "Sepal Length";
+  const xValue = d => d.timestamp;
+  const xAxisLabel = "Time";
   const xAxisLabelOffset = 50;
 
-  const yValue = d => d.sepal_width;
-  const yAxisLabel = "Sepal Width";
+  const yValue = d => d.temperature;
+  const yAxisLabel = "Temperature";
   const yAxisLabelOffset = 40
 
-  const siFormat = format('.2s')
-  const xAxisTickFormat = tickValue=>siFormat(tickValue).replace("G", "B")
+  const xAxisTickFormat = timeFormat('%a')
 
-  const xScale = scaleLinear()
+  const xScale = scaleTime()
     .domain(extent(data, xValue))
     .range([0,innerWidth])
     .nice()
 
   const yScale = scaleLinear()
     .domain(extent(data, yValue))
-    .range([0,innerHeight])
+    .range([innerHeight, 0])
+    .nice()
 
     console.log(xScale.ticks())
   return (
@@ -56,12 +56,12 @@ function App() {
             xScale={xScale} 
             innerHeight={innerHeight}
             tickFormat={xAxisTickFormat}
-            tickOffSet={5}
+            tickOffSet={7}
              />
             <AxisLeft 
             yScale={yScale}
             innerWidth={innerWidth}
-            tickOffSet={5}
+            tickOffSet={-2}
              />
 
             <text className='axis-label'
@@ -80,7 +80,7 @@ function App() {
             xValue={xValue}
             yValue={yValue}
             toolTipFormat={xAxisTickFormat}
-            circleRadius={7}
+            circleRadius={3}
             />
           </g>
         </svg>

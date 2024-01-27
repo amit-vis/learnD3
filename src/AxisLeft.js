@@ -5,7 +5,7 @@ yScale.ticks().map(tickValue=> (
   <text
   key={tickValue} 
   style={{textAnchor: 'end'}} 
-  x={tickOffSet} dy=".32em" 
+  x={tickOffSet+5} dy=".32em" 
   >{tickValue}</text>
   </g>
 ))

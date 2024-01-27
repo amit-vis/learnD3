@@ -3,7 +3,7 @@ import './App.css';
 import * as d3 from "d3"
 import { csv } from 'd3';
 
-const csvURL = `https://gist.githubusercontent.com/amit-vis/e77b668ae2278d9c396a7f5547650edd/raw/eec2bb31b892aa48c70186b34b5221e8e90bef03/iris.csv`
+const csvURL = `https://gist.githubusercontent.com/amit-vis/1619399752a9aa589bb00501f44506b7/raw/9e392bf69efa3fec6cc1c4511c60e7715073ee2e/week_temperature_sf.csv`
 
 export const useData = ()=>{
     const [data, setData] = useState(null)
@@ -11,10 +11,8 @@ export const useData = ()=>{
   
     useEffect(()=>{
       const row = d => {
-        d.sepal_length = +d.sepal_length;
-        d.sepal_width = +d.sepal_width;
-        d.petal_length = +d.petal_length;
-        d.petal_width = +d.petal_width;
+        d.temprature = +d.temprature;
+        d.timestamp = new Date(d.timestamp);
         return d
       }
       csv(csvURL, row).then(setData)
